@@ -4,37 +4,76 @@ import numpy as np
 from PIL import Image
 
 class HumanImageDecomposer:
-    """
-    Image decomposition class using SVD, coded by human.
-    """
+    """Image decomposition class using SVD, coded by human.
 
+    Parameters
+    ----------
+    path: str
+        Path to the image file
+
+    Attributes
+    ----------
+    path: Path
+        Path to the image file
+    image_array: np.ndarray
+        Image converted to numpy array
+    image_name: str
+        Image name without the file extension
+    """
     def __init__(self, path: str):
         self.path = Path(path)
         self.image_array, self.image_name = self._load_image()
 
-    def _load_image(self):
-        """
+    def _load_image(self) -> tuple[np.ndarray, str]:
+        """Load image from the path
+
+        Returns
+        -------
+        image_array: np.ndarray
+            Image converted to numpy array
+        image_name: str
+            Image name without the file extension
         """
         image = Image.open(self.path)
         image_name = self.path.stem
         image_extension = self.path.suffix
-        
+
         if image_extension not in [".jpg", ".jpeg"]:
             image = image.convert("RGB")
-            
+
         image_array = np.array(image)
         return image_array, image_name
 
-    def _save_image(self, image_array: np.ndarray, compression_target: int):
-        """
+    def _save_image(self, image_array: np.ndarray, compression_target: int) -> None:
+        """Save image to the result directory
+        
+        file name is in the format of {image_name}_human_{compression_target}.jpg
+
+        Parameters
+        ----------
+        image_array: np.ndarray
+            Image converted to numpy array
+        compression_target: int
+            Compression target
         """
         result_dir = Path.cwd() / "result"
         result_dir.mkdir(exist_ok=True)
         image = Image.fromarray(image_array)
         image.save(result_dir / f"{self.image_name}_human_{compression_target}.jpg")
 
-    def _reconstruct_image(self):
-        """
+    def _reconstruct_image(self) -> None:
+        """Reconstruct image using SVD
+        
+        Notes
+        -----
+        Images are reconstructed in the following order:
+        1. separate image into R, G, B channels
+        2. apply SVD to each channel
+        3. truncate singular values to the compression target of 5, 20, and 50
+        4. reconstruct each channel by multiplying their respective U, S (truncated), and V
+        5. stack the reconstructed channels to form the final image
+        6. clip the image to the range of 0-255 uint8 values
+        7. save all reconstructed images to the result directory
         """
         img_r_channel = self.image_array[:, :, 0]
         img_g_channel = self.image_array[:, :, 1]
