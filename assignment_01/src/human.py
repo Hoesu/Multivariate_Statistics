@@ -11,8 +11,13 @@ class HumanImageCompressor:
 
     def _load_image(self):
         image = Image.open(self.path)
-        image_array = np.array(image)
         image_name = self.path.stem
+        image_extension = self.path.suffix
+        
+        if image_extension not in [".jpg", ".jpeg"]:
+            image = image.convert("RGB")
+            
+        image_array = np.array(image)
         return image_array, image_name
 
     def _save_image(self, image_array: np.ndarray, compression_target: int):
