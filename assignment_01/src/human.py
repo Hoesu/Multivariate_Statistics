@@ -3,13 +3,18 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-class HumanImageCompressor:
+class HumanImageDecomposer:
+    """
+    Image decomposition class using SVD, coded by human.
+    """
 
     def __init__(self, path: str):
         self.path = Path(path)
         self.image_array, self.image_name = self._load_image()
 
     def _load_image(self):
+        """
+        """
         image = Image.open(self.path)
         image_name = self.path.stem
         image_extension = self.path.suffix
@@ -21,13 +26,16 @@ class HumanImageCompressor:
         return image_array, image_name
 
     def _save_image(self, image_array: np.ndarray, compression_target: int):
+        """
+        """
         result_dir = Path.cwd() / "result"
         result_dir.mkdir(exist_ok=True)
         image = Image.fromarray(image_array)
         image.save(result_dir / f"{self.image_name}_human_{compression_target}.jpg")
 
     def _reconstruct_image(self):
-
+        """
+        """
         img_r_channel = self.image_array[:, :, 0]
         img_g_channel = self.image_array[:, :, 1]
         img_b_channel = self.image_array[:, :, 2]

@@ -1,4 +1,4 @@
-class AiImageCompressor:
+class AiImageDecomposer:
     
     def __init__(self, path: str):
         pass
