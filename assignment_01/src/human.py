@@ -61,7 +61,7 @@ class HumanImageDecomposer:
         image = Image.fromarray(image_array)
         image.save(result_dir / f"{self.image_name}_human_{compression_target}.jpg")
 
-    def _reconstruct_image(self) -> None:
+    def reconstruct_image(self) -> None:
         """Reconstruct image using SVD
         
         Notes
