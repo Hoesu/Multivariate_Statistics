@@ -8,20 +8,20 @@ class HumanImageDecomposer:
 
     Parameters
     ----------
-    path: str
-        Path to the image file
+    cfg: dict
+        Configuration dictionary
 
     Attributes
     ----------
-    path: Path
-        Path to the image file
+    cfg: dict
+        Configuration dictionary
     image_array: np.ndarray
         Image converted to numpy array
     image_name: str
         Image name without the file extension
     """
-    def __init__(self, path: str):
-        self.path = Path(path)
+    def __init__(self, cfg: dict):
+        self.path = Path(cfg["image_path"])
         self.image_array, self.image_name = self._load_image()
 
     def _load_image(self) -> tuple[np.ndarray, str]:

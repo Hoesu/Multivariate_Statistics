@@ -3,16 +3,15 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import os
 
-
 class AiImageDecomposer:
     """AI 버전 SVD 이미지 분해 클래스"""
     
-    def __init__(self, path: str):
+    def __init__(self, cfg: dict):
         """
         Args:
-            path: 입력 이미지 파일 경로 (기존 워크플로우와 동일한 매개변수명)
+            cfg: 입력 이미지 파일 경로 (기존 워크플로우와 동일한 매개변수명)
         """
-        self.image_path = path
+        self.image_path = cfg["image_path"]
         self.original_image = None
         self.image_array = None
         self.channels = None
