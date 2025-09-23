@@ -29,6 +29,8 @@ uv run main.py
 
 ## AI Prompts
 
+AI prompting은 **ai.py** 스크립트를 수정하는 용도로만 사용되었습니다.
+
 Powered by Claude-4-sonnet
 
 ```bash
@@ -57,4 +59,8 @@ compare it to your code and results. (100 points)
 
 ```bash
 ai.py 스크립트 닥스트링이 마음에 안들어. human.py처럼 numpy style로 통일해줘.
+```
+
+```bash
+디렉토리 관련 설정에서 절대경로로 받아서 나머지 태스크로 진행하는 것은 위험한것 같아. 만약에 다른 사용자가 이걸 사용한다면, 절대경로가 달라지기 때문에 에러가 발생할거야. configuration에서 절대경로를 넘겨받더라도, 이걸 상대경로로 유연하게 변환하여 태스크를 진행하는 방식으로 코드를 리팩토링해줘.
 ```

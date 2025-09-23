@@ -41,24 +41,54 @@ class AiImageDecomposer:
         self.height = None
         self.width = None
         
-        # 경로 설정
-        self.assets_dir = "/home/hoesu.chung/GITHUB/Multivariate_Statistics/assignment_01/assets"
-        self.output_dir = "/home/hoesu.chung/GITHUB/Multivariate_Statistics/assignment_01/results"
+        # 프로젝트 루트 디렉토리 찾기 (현재 파일 기준으로 상대경로 계산)
+        self.project_root = self._find_project_root()
+        
+        # 경로 설정 (상대경로 기반)
+        self.assets_dir = os.path.join(self.project_root, "assignment_01", "assets")
+        self.output_dir = os.path.join(self.project_root, "assignment_01", "results")
         
         # 과제 요구사항에 따른 특이값 개수
         self.k_values = [5, 20, 50]
         
         self._load_image()
     
+    def _find_project_root(self):
+        """Find project root directory dynamically
+        
+        Returns
+        -------
+        str
+            Absolute path to project root directory
+        """
+        # 현재 파일의 위치에서 시작
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # assignment_01 디렉토리를 찾을 때까지 상위로 이동
+        while current_dir != os.path.dirname(current_dir):  # 루트까지 갔을 때 종료
+            # assignment_01 디렉토리가 있는지 확인
+            if os.path.exists(os.path.join(current_dir, "assignment_01")):
+                return current_dir
+            current_dir = os.path.dirname(current_dir)
+        
+        # assignment_01을 찾지 못한 경우, 현재 디렉토리가 assignment_01인지 확인
+        current_file_dir = os.path.dirname(os.path.abspath(__file__))
+        if os.path.basename(os.path.dirname(current_file_dir)) == "assignment_01":
+            return os.path.dirname(os.path.dirname(current_file_dir))
+        
+        # 최종적으로 찾지 못한 경우 현재 파일 기준 상위 2단계 (src -> assignment_01 -> project_root)
+        return os.path.dirname(os.path.dirname(current_file_dir))
+    
     def _load_image(self):
         """Load image from the path and convert to numpy array"""
         try:
             # 경로 처리: 상대 경로인 경우 절대 경로로 변환
             if not os.path.isabs(self.image_path):
-                # assets/ 로 시작하는 경우 전체 경로로 변환
+                # assets/ 로 시작하는 경우 프로젝트 루트 기준으로 변환
                 if self.image_path.startswith('assets/'):
-                    self.image_path = os.path.join('/home/hoesu.chung/GITHUB/Multivariate_Statistics/assignment_01', self.image_path)
+                    self.image_path = os.path.join(self.project_root, "assignment_01", self.image_path)
                 else:
+                    # assets 디렉토리 내의 파일로 가정
                     self.image_path = os.path.join(self.assets_dir, self.image_path)
             
             # PIL로 이미지 로드
@@ -72,6 +102,8 @@ class AiImageDecomposer:
             self.image_array = np.array(self.original_image, dtype=np.float64)
             self.height, self.width, self.channels = self.image_array.shape
             
+            print(f"프로젝트 루트: {self.project_root}")
+            print(f"이미지 경로: {self.image_path}")
             print(f"이미지 로드 완료: {self.width}x{self.height}, 채널수: {self.channels}")
             
         except Exception as e:
