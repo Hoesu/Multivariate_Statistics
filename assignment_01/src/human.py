@@ -41,7 +41,7 @@ class HumanImageDecomposer:
         if image_extension not in [".jpg", ".jpeg"]:
             image = image.convert("RGB")
 
-        image_array = np.array(image)
+        image_array = np.array(image, dtype=np.float64)
         return image_array, image_name
 
     def _save_image(self, image_array: np.ndarray, compression_target: int) -> None:
