@@ -43,7 +43,7 @@ class AiImageDecomposer:
         
         # 경로 설정
         self.assets_dir = "/home/hoesu.chung/GITHUB/Multivariate_Statistics/assignment_01/assets"
-        self.output_dir = "/home/hoesu.chung/GITHUB/Multivariate_Statistics/assignment_01/result"
+        self.output_dir = "/home/hoesu.chung/GITHUB/Multivariate_Statistics/assignment_01/results"
         
         # 과제 요구사항에 따른 특이값 개수
         self.k_values = [5, 20, 50]

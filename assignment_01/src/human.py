@@ -56,7 +56,7 @@ class HumanImageDecomposer:
         compression_target: int
             Compression target
         """
-        result_dir = Path.cwd() / "result"
+        result_dir = Path.cwd() / "results"
         result_dir.mkdir(exist_ok=True)
         image = Image.fromarray(image_array)
         image.save(result_dir / f"{self.image_name}_human_{compression_target}.jpg")
