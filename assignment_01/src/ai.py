@@ -4,13 +4,36 @@ import matplotlib.pyplot as plt
 import os
 
 class AiImageDecomposer:
-    """AI 버전 SVD 이미지 분해 클래스"""
+    """Image decomposition class using SVD, coded by AI.
+
+    Parameters
+    ----------
+    cfg: dict
+        Configuration dictionary
+
+    Attributes
+    ----------
+    image_path: str
+        Path to the input image file
+    original_image: PIL.Image
+        Original image loaded from file
+    image_array: np.ndarray
+        Image converted to numpy array
+    height: int
+        Image height
+    width: int
+        Image width
+    channels: int
+        Number of image channels
+    assets_dir: str
+        Assets directory path
+    output_dir: str
+        Output directory path
+    k_values: list
+        List of singular value counts for compression
+    """
     
     def __init__(self, cfg: dict):
-        """
-        Args:
-            cfg: 입력 이미지 파일 경로 (기존 워크플로우와 동일한 매개변수명)
-        """
         self.image_path = cfg["image_path"]
         self.original_image = None
         self.image_array = None
@@ -28,7 +51,7 @@ class AiImageDecomposer:
         self._load_image()
     
     def _load_image(self):
-        """이미지를 로드하고 numpy 배열로 변환"""
+        """Load image from the path and convert to numpy array"""
         try:
             # 경로 처리: 상대 경로인 경우 절대 경로로 변환
             if not os.path.isabs(self.image_path):
@@ -55,13 +78,41 @@ class AiImageDecomposer:
             raise ValueError(f"이미지 로드 실패: {e}")
     
     def _apply_svd_to_channel(self, channel_matrix: np.ndarray) -> tuple:
-        """단일 채널에 SVD 적용"""
+        """Apply SVD to a single channel
+
+        Parameters
+        ----------
+        channel_matrix: np.ndarray
+            Single channel matrix
+
+        Returns
+        -------
+        tuple
+            U, s, Vt matrices from SVD decomposition
+        """
         # SVD 분해: A = U * S * V^T
         U, s, Vt = np.linalg.svd(channel_matrix, full_matrices=False)
         return U, s, Vt
     
     def _reconstruct_channel(self, U: np.ndarray, s: np.ndarray, Vt: np.ndarray, k: int) -> np.ndarray:
-        """상위 k개 특이값으로 채널 재구성"""
+        """Reconstruct channel using top k singular values
+
+        Parameters
+        ----------
+        U: np.ndarray
+            Left singular vectors
+        s: np.ndarray
+            Singular values
+        Vt: np.ndarray
+            Right singular vectors (transposed)
+        k: int
+            Number of top singular values to use
+
+        Returns
+        -------
+        np.ndarray
+            Reconstructed channel matrix
+        """
         # 상위 k개 특이값만 사용
         U_k = U[:, :k]
         s_k = s[:k]
@@ -76,14 +127,17 @@ class AiImageDecomposer:
         return reconstructed
     
     def decompose_and_reconstruct(self, k_values: list) -> dict:
-        """
-        SVD를 사용하여 이미지를 분해하고 재구성
+        """Decompose and reconstruct image using SVD
         
-        Args:
-            k_values: 사용할 특이값 개수 리스트
+        Parameters
+        ----------
+        k_values: list
+            List of k values (number of singular values to use)
             
-        Returns:
-            dict: {k: reconstructed_image_array} 형태
+        Returns
+        -------
+        dict
+            Dictionary with k values as keys and reconstructed image arrays as values
         """
         results = {}
         
@@ -119,7 +173,15 @@ class AiImageDecomposer:
         return results
     
     def save_results(self, results: dict, output_dir: str):
-        """재구성된 이미지들을 저장"""
+        """Save reconstructed images to output directory
+
+        Parameters
+        ----------
+        results: dict
+            Dictionary containing reconstructed image arrays
+        output_dir: str
+            Output directory path
+        """
         # 출력 디렉토리 생성
         os.makedirs(output_dir, exist_ok=True)
         
@@ -138,7 +200,13 @@ class AiImageDecomposer:
             print(f"저장 완료: {output_path}")
     
     def compare_images(self, results: dict):
-        """원본과 재구성된 이미지들을 비교 시각화"""
+        """Compare original and reconstructed images with visualization
+
+        Parameters
+        ----------
+        results: dict
+            Dictionary containing reconstructed image arrays
+        """
         n_images = len(results) + 1  # 원본 + 재구성된 이미지들
         fig, axes = plt.subplots(1, n_images, figsize=(4*n_images, 4))
         
@@ -157,7 +225,7 @@ class AiImageDecomposer:
         plt.show()
     
     def analyze_singular_values(self):
-        """각 채널의 특이값 분석"""
+        """Analyze singular values for each channel"""
         fig, axes = plt.subplots(1, 3, figsize=(15, 4))
         channel_names = ['Red', 'Green', 'Blue']
         
@@ -188,9 +256,12 @@ class AiImageDecomposer:
                     print(f"  상위 {k}개 특이값으로 {energy_ratio:.1f}%의 에너지 보존")
     
     def reconstruct_image(self):
-        """
-        기존 워크플로우에 맞는 이미지 재구성 메소드
-        main.py에서 호출되는 메인 함수
+        """Reconstruct image using SVD
+        
+        Notes
+        -----
+        Main function called from main.py that follows the existing workflow.
+        Performs image analysis, SVD decomposition, reconstruction, and saving.
         """
         print(f"\n{'='*60}")
         print(f"AI 버전 - 처리 중인 이미지: {os.path.basename(self.image_path)}")
